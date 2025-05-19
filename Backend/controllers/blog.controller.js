@@ -1,3 +1,4 @@
+import { TryCatch } from "../middlewares/error.js";
 import Blog from "../models/blogModel.js";
 
 export const saveBlog = async (req, res) => {
@@ -74,3 +75,38 @@ export const updateBlog = async (req, res) => {
     });
   }
 };
+
+
+export const getBlog=async(req,res)=>{
+  try {
+    const blogs = await Blog.find().populate("author");
+    const published=blogs.filter(blog=>blog.status==="published");
+    const draft=blogs.filter(blog=>blog.status==="draft");
+    res.status(200).json({
+      published,
+      draft,
+      message:"Fetched Successfully"
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({
+      message:"Error in fetching the blogs"
+    })
+  }
+}
+
+
+export const getBlogById=TryCatch(async(req,res)=>{
+  const {blogId}=req.params;
+  const blog=await Blog.findById(blogId).populate("author");
+  if(!blog){
+    return res.status(404).error({
+      error:"Blog Not Found"
+    })
+  };
+  res.status(200).json({
+    message:"Found the Blog",
+    blog,
+    success:true
+  })
+})
