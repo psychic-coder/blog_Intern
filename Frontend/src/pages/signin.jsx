@@ -60,7 +60,7 @@ const Signin = () => {
 
         const { message, success, tokenData } = response.data;
         if (success) {
-            // Store user data and token (example using localStorage)
+           
             localStorage.setItem('token', tokenData._id);
             localStorage.setItem('user', JSON.stringify({
                 id: tokenData._id,
