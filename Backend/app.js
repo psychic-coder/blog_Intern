@@ -33,8 +33,11 @@ app.use(
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(cors({origin:' * ',credentials:true}));
-app.use(morgan('dev'))
+app.use(cors({
+  origin: 'http://localhost:5173', // Your frontend origin
+  credentials: true 
+
+}));app.use(morgan('dev'))
     
   
 app.use('/api/auth', authRoutes);
