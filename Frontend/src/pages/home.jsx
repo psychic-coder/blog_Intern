@@ -10,13 +10,20 @@ const Home = () => {
   const [error, setError] = useState(null);
   const navigate=useNavigate();
 
+  const config = {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:4000/api/blog/getAllBlogs');
         
-        // Extract only published blogs
+        
         if (response.data && response.data.published) {
           setBlogs(response.data.published);
         } else {
@@ -70,13 +77,8 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900">Hello Blogs</h1>
-          <p className="mt-2 text-gray-600">Discover the latest articles and updates</p>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50 pt-10">
+
       
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {blogs.length === 0 ? (

@@ -5,6 +5,12 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
 const Signin = () => {
+  const config = {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
     const navigate=useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -39,9 +45,7 @@ const Signin = () => {
                     email: formData.email,
                     password: formData.password,
                 },
-                {
-                    headers: { 'Content-Type': 'application/json' }
-                }
+                config
             );
         } else {
             
@@ -52,16 +56,13 @@ const Signin = () => {
                     email: formData.email,
                     password: formData.password,
                 },
-                {
-                    headers: { 'Content-Type': 'application/json' }
-                }
+                config
             );
         }
 
         const { message, success, tokenData } = response.data;
         if (success) {
            
-            localStorage.setItem('token', tokenData._id);
             localStorage.setItem('user', JSON.stringify({
                 id: tokenData._id,
                 username: tokenData.username,
@@ -72,7 +73,7 @@ const Signin = () => {
             console.log(message, tokenData);
         } else {
             console.log(message);
-            alert(message); // Show error message to user
+            alert(message); 
         }
     } catch (error) {
         console.error("Error in signing in the user", error);
