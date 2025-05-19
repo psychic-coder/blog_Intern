@@ -5,6 +5,9 @@ import Signin from './pages/signin'
 import Blog from './pages/Blog'
 import Navbar from './components/Navbar'
 import CreateBlog from './pages/CreateBlog'
+import ProtectedRoute from './components/ProtectedRoute'
+import Profile from './pages/Profile'
+import Update from './pages/Update'
 
 
 const App = () => {
@@ -15,8 +18,12 @@ const App = () => {
       <Route path='/home' element={<Home/>} />
       <Route path='/signin' element={<Signin/>} />
       <Route path='/blog/:blogId' element={<Blog/>} />
-      <Route path='/createblog' element={<CreateBlog/>} />
       <Route path='/' element={<Home/>} />
+      <Route element={<ProtectedRoute/>}>
+      <Route path='/createblog' element={<CreateBlog/>} />
+      <Route path="/profile" element={<Profile/>} />
+      <Route path="/blogUpdate/:blogId" element={<Update/>} />
+      </Route>
     </Routes>
     </BrowserRouter>
   )

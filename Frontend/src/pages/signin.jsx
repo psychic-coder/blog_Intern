@@ -2,12 +2,14 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import axios from "axios";
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { signInSuccess } from '../redux/user/userSlice';
 
 const Signin = () => {
 
 
-  
+  const dispatch=useDispatch();
   const config = {
     withCredentials: true,
     headers: {
@@ -72,10 +74,12 @@ const Signin = () => {
                 id: tokenData._id,
                 username: tokenData.username,
                 email: tokenData.email
+
             }));
             
             navigate("/home");
             console.log(message, tokenData);
+            dispatch(signInSuccess(tokenData))
         } else {
             console.log(message);
             alert(message); 

@@ -10,12 +10,12 @@ const Home = () => {
   const [error, setError] = useState(null);
   const navigate=useNavigate();
 
-  const config = {
-    withCredentials: true,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
+  // const config = {
+  //   withCredentials: true,
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  // };
 
   useEffect(() => {
     const fetchBlogs = async () => {
