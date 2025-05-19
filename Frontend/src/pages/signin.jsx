@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import axios from "axios";
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { signInSuccess } from '../redux/user/userSlice';
 
 const Signin = () => {
+  const {currentUser}=useSelector((state)=>state.user)
 
 
   const dispatch=useDispatch();
@@ -91,6 +92,12 @@ const Signin = () => {
         setIsLoading(false);
     }
 };
+
+if(currentUser){
+  return (
+    <Navigate to="/" replace/>
+  )
+}
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

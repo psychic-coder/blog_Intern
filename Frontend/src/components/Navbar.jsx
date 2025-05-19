@@ -1,13 +1,25 @@
 import { useState } from "react";
 import { PenLine, User, Menu, X } from "lucide-react";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signOutSuccess } from "../redux/user/userSlice";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const handleNavigate = () => navigate("/createblog");
-//  ; const handleProfileNavigate = () => Navigate("/profile")
-
+  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleSignOut = () => {
+    dispatch(signOutSuccess());
+    navigate("/signin");
+  };
+
+  const handleSignIn = () => {
+    navigate("/signin");
+  };
 
   return (
     <div className="w-full p-6">
@@ -37,10 +49,30 @@ const Navbar = () => {
                 <PenLine size={18} className="mr-2" />
                 Create Blog
               </button>
-              <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md flex items-center transition duration-150">
-                <User size={18} className="mr-2" />
-                Profile
-              </button>
+              {currentUser ? (
+                <>
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md flex items-center transition duration-150"
+                  >
+                    <User size={18} className="mr-2" />
+                    Profile
+                  </button>
+                  <button
+                    onClick={handleSignOut}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center transition duration-150"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleSignIn}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center transition duration-150"
+                >
+                  Sign In
+                </button>
+              )}
             </div>
 
             <div className="md:hidden flex items-center">
@@ -67,13 +99,30 @@ const Navbar = () => {
                 <PenLine size={18} className="mr-2" />
                 Create Blog
               </button>
-              <button
-               onClick={() => navigate("/profile")}
-                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-md text-base font-medium flex items-center justify-center"
-              >
-                <User size={18} className="mr-2" />
-                Profile
-              </button>
+              {currentUser ? (
+                <>
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-md text-base font-medium flex items-center justify-center"
+                  >
+                    <User size={18} className="mr-2" />
+                    Profile
+                  </button>
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-base font-medium flex items-center justify-center"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleSignIn}
+                  className="w-full bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-md text-base font-medium flex items-center justify-center"
+                >
+                  Sign In
+                </button>
+              )}
             </div>
           </div>
         )}
