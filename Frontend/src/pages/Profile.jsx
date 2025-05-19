@@ -69,13 +69,6 @@ export default function Profile() {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">My Blog Posts</h1>
           <p className="text-gray-600">Manage all your published and draft blog posts</p>
         </div>
-        <button 
-          onClick={() => window.location.href = '/create-blog'}
-          className="mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-md flex items-center cursor-pointer"
-        >
-          <FilePen size={18} className="mr-2" />
-          Create New Blog
-        </button>
       </div>
 
      
