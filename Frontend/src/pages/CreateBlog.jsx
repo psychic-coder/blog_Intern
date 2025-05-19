@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { PenLine, Tag, Check, X, ArrowLeft } from 'lucide-react';
@@ -21,6 +20,10 @@ export default function CreateBlog() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [lastSaved, setLastSaved] = useState(null);
+
+  const autoSaveTimer = useRef(null);
+  const inactivityTimer = useRef(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +31,41 @@ export default function CreateBlog() {
       ...prevData,
       [name]: value
     }));
+
+    // Debounced auto-save after 20 seconds of inactivity
+    clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      autoSaveDraft();
+    }, 20000);
+
+    // Reset inactivity timer for 30 mins
+    clearTimeout(inactivityTimer.current);
+    inactivityTimer.current = setTimeout(() => {
+      console.log("30 mins inactivity - auto-submitting draft...");
+      autoSaveDraft();
+    }, 30 * 60 * 1000);
+  };
+
+  const autoSaveDraft = async () => {
+    try {
+      const tagsArray = formData.tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag !== '');
+
+      const draftData = {
+        title: formData.title,
+        content: formData.content,
+        tags: tagsArray,
+        status: 'draft'
+      };
+
+      await axios.post('http://localhost:4000/api/blog/createNew', draftData, config);
+      setLastSaved(new Date().toLocaleTimeString());
+      console.log('Auto-saved at', new Date().toLocaleTimeString());
+    } catch (err) {
+      console.error('Auto-save failed:', err);
+    }
   };
 
   const handleStatusChange = (status) => {
@@ -41,25 +79,23 @@ export default function CreateBlog() {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
-    
+
     try {
-      // Convert comma-separated tags to array
       const tagsArray = formData.tags
         .split(',')
         .map(tag => tag.trim())
         .filter(tag => tag !== '');
-      
+
       const blogData = {
         title: formData.title,
         content: formData.content,
         tags: tagsArray,
         status: formData.status
       };
-      
-      await axios.post('http://localhost:4000/api/blog/createNew',blogData,config);
-      
+
+      await axios.post('http://localhost:4000/api/blog/createNew', blogData, config);
+
       setShowSuccess(true);
-      // Auto redirect after 2 seconds
       setTimeout(() => {
         navigate('/home');
       }, 2000);
@@ -71,24 +107,29 @@ export default function CreateBlog() {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      clearTimeout(autoSaveTimer.current);
+      clearTimeout(inactivityTimer.current);
+    };
+  }, []);
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Back button */}
-      <button 
+      <button
         onClick={() => navigate('/')}
         className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
       >
         <ArrowLeft size={18} className="mr-2" />
         Back to Home
       </button>
-      
+
       <div className="bg-white rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
           <PenLine className="mr-2" />
           Create New Blog Post
         </h1>
 
-        {/* Success popup */}
         {showSuccess && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 shadow-xl max-w-md w-full">
@@ -104,7 +145,7 @@ export default function CreateBlog() {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Title input */}
+         
           <div className="mb-6">
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
               Blog Title
@@ -121,7 +162,7 @@ export default function CreateBlog() {
             />
           </div>
 
-          {/* Content textarea */}
+         
           <div className="mb-6">
             <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
               Blog Content
@@ -138,7 +179,7 @@ export default function CreateBlog() {
             />
           </div>
 
-          {/* Tags input */}
+         
           <div className="mb-6">
             <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
               <Tag size={16} className="mr-1" />
@@ -154,9 +195,16 @@ export default function CreateBlog() {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
             <p className="text-xs text-gray-500 mt-1">Separate tags with commas (e.g., react, javascript, web)</p>
+
+            {/* Auto-saved message */}
+            {lastSaved && (
+              <p className="text-xs text-green-600 mt-2">
+                Auto-saved at {lastSaved}
+              </p>
+            )}
           </div>
 
-          {/* Status selection */}
+          
           <div className="mb-8">
             <span className="block text-sm font-medium text-gray-700 mb-2">Post Status</span>
             <div className="flex space-x-4">
@@ -164,8 +212,8 @@ export default function CreateBlog() {
                 type="button"
                 onClick={() => handleStatusChange('draft')}
                 className={`px-4 py-2 rounded-md flex items-center ${
-                  formData.status === 'draft' 
-                    ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' 
+                  formData.status === 'draft'
+                    ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -175,8 +223,8 @@ export default function CreateBlog() {
                 type="button"
                 onClick={() => handleStatusChange('published')}
                 className={`px-4 py-2 rounded-md flex items-center ${
-                  formData.status === 'published' 
-                    ? 'bg-green-100 text-green-800 border border-green-300' 
+                  formData.status === 'published'
+                    ? 'bg-green-100 text-green-800 border border-green-300'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -185,7 +233,7 @@ export default function CreateBlog() {
             </div>
           </div>
 
-          {/* Error message */}
+         
           {error && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md flex items-center">
               <X size={16} className="mr-2 flex-shrink-0" />
@@ -193,7 +241,7 @@ export default function CreateBlog() {
             </div>
           )}
 
-          {/* Submit buttons */}
+         
           <div className="flex justify-end space-x-3">
             <button
               type="button"
