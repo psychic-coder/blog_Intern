@@ -5,13 +5,18 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
 const Signin = () => {
+
+
+  
   const config = {
     withCredentials: true,
     headers: {
       "Content-Type": "application/json",
     },
   };
-    const navigate=useNavigate();
+
+
+  const navigate=useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

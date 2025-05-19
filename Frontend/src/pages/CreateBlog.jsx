@@ -5,6 +5,12 @@ import axios from 'axios';
 import { PenLine, Tag, Check, X, ArrowLeft } from 'lucide-react';
 
 export default function CreateBlog() {
+  const config = {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
@@ -50,7 +56,7 @@ export default function CreateBlog() {
         status: formData.status
       };
       
-      await axios.post('http://localhost:4000/api/blog/createNew', blogData);
+      await axios.post('http://localhost:4000/api/blog/createNew',blogData,config);
       
       setShowSuccess(true);
       // Auto redirect after 2 seconds
